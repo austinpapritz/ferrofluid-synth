@@ -56,7 +56,6 @@ export class AudioControl {
         // calculate the frequency bin bandwidth
         this.freqBandwidth =
           this.audioContext.sampleRate / 2 / this.bufferLength;
-
         this.isInitialized = true;
       })
       .catch((err) => {
@@ -84,7 +83,7 @@ export class AudioControl {
       //   console.log("frequency", frequency);
 
       if (frequency > 0) {
-        // make logarithmic range to appeare more natural in respect to musical notes
+        // make logarithmic range to appear more natural in respect to musical notes
         let result = mapRange(
           Math.log2(frequency),
           Math.log2(this.MIN_FREQ),
