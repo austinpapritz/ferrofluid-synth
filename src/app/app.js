@@ -19,6 +19,8 @@ import {
 import { Sketch } from "./sketch-04";
 import { Pane } from "tweakpane";
 import { AudioControl } from "./audio-control";
+import { sine } from "./synth.js";
+import { UserMedia } from "tone";
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
@@ -63,6 +65,7 @@ fromEvent(window, "load")
 // mic button
 fromEvent(micBtnElm, "click").subscribe(() => {
   audioControl.init();
+  sine();
   micBtnElm.disabled = true;
 });
 
