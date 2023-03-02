@@ -7,3 +7,7 @@ export function sine() {
   osc.start();
   osc.toDestination();
 }
+
+export function audioStream() {
+  // create audio stream here?
+}

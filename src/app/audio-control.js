@@ -1,4 +1,5 @@
 import { clamp, mapRange } from "./utils";
+import { sine } from "./synth.js";
 
 export class AudioControl {
   isInitialized = false;
@@ -27,10 +28,10 @@ export class AudioControl {
       document.body.appendChild(this.visualizerElm);
     }
   }
-  // initialize the synth here?
   init() {
     this.audioContext = new AudioContext();
 
+    // this grabs the mic input as a MediaStream object
     navigator.mediaDevices
       .getUserMedia({
         audio: {
@@ -44,6 +45,7 @@ export class AudioControl {
         },
       })
       .then((stream) => {
+        // takes the stream object and makes a media stream source out of it
         this.mediaStreamSource =
           this.audioContext.createMediaStreamSource(stream);
         this.analyser = this.audioContext.createAnalyser();
