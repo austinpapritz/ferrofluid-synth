@@ -19,6 +19,7 @@ import {
 import { Sketch } from "./sketch-04";
 import { Pane } from "tweakpane";
 import { AudioControl } from "./audio-control";
+import { sine } from "./synth.js";
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);

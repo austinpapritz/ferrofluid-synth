@@ -1,4 +1,5 @@
 import { clamp, mapRange } from "./utils";
+import * as Tone from "tone";
 import { sine } from "./synth.js";
 
 export class AudioControl {
@@ -28,57 +29,35 @@ export class AudioControl {
       document.body.appendChild(this.visualizerElm);
     }
   }
+
   init() {
-    this.audioContext = new AudioContext();
-
-    // this grabs the mic input as a MediaStream object
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: {
-          mandatory: {
-            googEchoCancellation: false,
-            googAutoGainControl: false,
-            googNoiseSuppression: false,
-            googHighpassFilter: false,
-          },
-          optional: [],
-        },
-      })
-      .then((stream) => {
-        // takes the stream object and makes a media stream source out of it
-        this.mediaStreamSource =
-          this.audioContext.createMediaStreamSource(stream);
-        this.analyser = this.audioContext.createAnalyser();
-        this.analyser.fftSize = this.FFT_BUFFER_SIZE;
-        this.analyser.minDecibels = -90;
-        this.bufferLength = this.analyser.frequencyBinCount;
-        this.buffer = new Uint8Array(this.bufferLength);
-        this.mediaStreamSource.connect(this.analyser);
-
-        // calculate the frequency bin bandwidth
-        this.freqBandwidth =
-          this.audioContext.sampleRate / 2 / this.bufferLength;
-        this.isInitialized = true;
-      })
-      .catch((err) => {
-        console.error(
-          `Could not initialize user media device: ${err.name}: ${err.message}`
-        );
-      });
+    let osc = new Tone.Oscillator();
+    osc.type = "sine"; // triangle, square or sawtooth
+    osc.frequency.value = 2000; // hz
+    osc.start();
+    osc.toDestination();
   }
 
   getValue() {
+    let waveform = new Tone.Waveform();
+    Tone.Destination.connect(waveform);
+    let buffer = waveform.getValue(0);
+    console.log("buffer", buffer);
+
     if (this.isInitialized) {
-      this.analyser.getByteFrequencyData(this.buffer);
+      this.analyser.getByteFrequencyData(buffer);
+      console.log("buffer", buffer);
 
       if (this.isDev) this.visualize();
 
       // finds the frequency band index with the maximum amplitude
       // tweak these values to be better normalized for a simple oscillator
-      const maxLevelIndex = this.buffer.reduce(
+      const maxLevelIndex = buffer.reduce(
         (max, value, index) => (value > max.value ? { value, index } : max),
         { value: 0, index: 0 }
       ).index;
+
+      console.log("maxLevelIndex", maxLevelIndex);
 
       // exact frequency of max amplitude
       let frequency = maxLevelIndex * this.freqBandwidth;
@@ -110,11 +89,11 @@ export class AudioControl {
       this.VISUALIZER_HEIGHT
     );
 
-    const barWidth = (this.VISUALIZER_WIDTH / this.bufferLength) * 2.5;
+    const barWidth = (this.VISUALIZER_WIDTH / buffer.length) * 2.5;
     let barHeight;
     let x = 0;
 
-    for (let i = 0; i < this.bufferLength; i++) {
+    for (let i = 0; i < buffer.length; i++) {
       barHeight = this.buffer[i];
 
       this.visualizerCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
