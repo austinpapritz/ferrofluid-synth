@@ -42,11 +42,9 @@ export class AudioControl {
     let waveform = new Tone.Waveform();
     Tone.Destination.connect(waveform);
     let buffer = waveform.getValue(0);
-    console.log("buffer", buffer);
 
     if (this.isInitialized) {
       this.analyser.getByteFrequencyData(buffer);
-      console.log("buffer", buffer);
 
       if (this.isDev) this.visualize();
 
@@ -56,8 +54,6 @@ export class AudioControl {
         (max, value, index) => (value > max.value ? { value, index } : max),
         { value: 0, index: 0 }
       ).index;
-
-      console.log("maxLevelIndex", maxLevelIndex);
 
       // exact frequency of max amplitude
       let frequency = maxLevelIndex * this.freqBandwidth;
