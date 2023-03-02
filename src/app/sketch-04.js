@@ -55,9 +55,9 @@ export class Sketch {
   planeResolution = 128;
 
   // entry animation properties
-  entryDelay = 1; // frames default 120
-  entryDuration = 1; // frames default 420
-  entryProgress = 0;
+  entryDelay = 120; // frames
+  entryDuration = 420; // frames
+  entryProgress = 419;
   isEntryAnimationDone = false;
 
   simulationParams = {
